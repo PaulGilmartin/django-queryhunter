@@ -1,0 +1,59 @@
+[build-system]
+requires = ["poetry>=1.1.13"]
+build-backend = "poetry.masonry.api"
+
+[tool.coverage.report]
+exclude_lines = [
+    "pragma: no cover",
+    "raise AssertionError",
+    "raise NotImplementedError",
+    "pass",
+    "pytest.mark.skip"
+]
+show_missing = true
+fail_under = 100
+
+[tool.poetry]
+name = "django-queryhunter"
+packages = [
+  { include = "queryhunter" }
+]
+version = "0.1.0"
+description = "Map your Django application code to the SQL queries it produces."
+authors = ["Paul Gilmartin"]
+classifiers = [
+  "Intended Audience :: Developers",
+  "Operating System :: OS Independent",
+  "Programming Language :: Python",
+  "Programming Language :: Python :: 3.8",
+  "Programming Language :: Python :: 3.9",
+  "Programming Language :: Python :: 3.10",
+  "Programming Language :: Python :: 3 :: Only",
+  "Framework :: Django",
+]
+license = "BSD-3-Clause"
+readme = "README.md"
+homepage = "https://github.com/PaulGilmartin/django-queryhunter"
+repository = "https://github.com/PaulGilmartin/django-queryhunter"
+
+[tool.poetry.dependencies]
+python = ">=3.8.0,<4"
+django = ">=3.2"
+
+[tool.poetry.dev-dependencies]
+pytest = "8.0.0"
+pytest-cov = "4.1.0"
+pytest-dotenv = "0.5.2"
+pytest-django = "4.8.0"
+pytest-mock = "3.12.0"
+
+[tool.pytest.ini_options]
+xfail_strict = true
+addopts = "--reuse-db"
+testpaths = "queryhunter/tests"
+norecursedirs = ".venv"
+log_cli = true
+log_cli_level = "INFO"
+DJANGO_SETTINGS_MODULE = "settings"
+filterwarnings = ["ignore::DeprecationWarning:django.http.request:",
+    "ignore::DeprecationWarning:django.utils.encoding:"]
