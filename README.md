@@ -1,2 +1,2 @@
 # django-queryhunter
-Find out which lines of your Django application code execute the most SQL queries
+Map your Django application code to the SQL queries it produces.
