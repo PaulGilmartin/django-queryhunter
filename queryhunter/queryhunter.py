@@ -98,9 +98,11 @@ class query_hunter(contextlib.ContextDecorator):
         self.metadata = metadata
         self._query_hunter = QueryHunter()
         self._pre_execute_hook = connection.execute_wrapper(self._query_hunter)
+        self.query_info = self._query_hunter.query_info
 
     def __enter__(self):
-        return self._pre_execute_hook.__enter__()
+        self._pre_execute_hook.__enter__()
+        return self
 
     def __exit__(self, *exc):
         for _filename, file_data in self._query_hunter.query_info.items():
