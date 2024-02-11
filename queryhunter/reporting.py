@@ -26,22 +26,14 @@ class QueryHunterReportingOptions:
 @dataclass
 class QueryHunterPrintingOptions(QueryHunterReportingOptions):
     report_type: str = 'print'
+    count_highlighting_threshold: int = 5
+    duration_highlighting_threshold: float = 0.5
 
 
 @dataclass
 class QueryHunterLoggingOptions(QueryHunterReportingOptions):
     report_type: str = 'log'
-    log_file: Optional[str] = None
-
-    def __post_init__(self):
-        if self.log_file is None:
-            self.log_file = 'queryhunter.log'
-
-
-class QueryHunterHTMLOptions(QueryHunterReportingOptions):
-    report_type: str = 'html'
-    count_highlighting_threshold: Optional[int] = 5
-    duration_highlighting_threshold: Optional[float] = 0.5
+    log_file: str = 'queryhunter.log'
 
 
 class QueryHunterReporter:
@@ -55,17 +47,23 @@ class QueryHunterReporter:
             self.print_report()
         elif self.options.report_type == 'log':
             self.log_report()
-        elif self.options.report_type == 'html':
-            self.html_report()
         else:
             raise ValueError(f'Invalid report_type: {self.options.report_type}')
 
     def print_report(self):
+        RED = "\033[31m"
+        GREEN = "\033[32m"
+        BOLD = "\033[1m"
         for name, module in self.query_info.items():
-            print(name)
+            print(f'{BOLD}name')
             print('=' * 2 * len(name))
             for line in module.lines:
-                print(f'   {line}')
+                if line.duration >= self.options.duration_highlighting_threshold:
+                    print(f'   {RED}{line}')
+                elif line.count >= self.options.count_highlighting_threshold:
+                    print(f'   {RED}{line}')
+                else:
+                    print(f'   {GREEN}{line}')
 
     def log_report(self):
         logging.basicConfig(filename=self.options.log_file, level=logging.DEBUG, format='%(message)s')
@@ -73,5 +71,3 @@ class QueryHunterReporter:
         for name, module in self.query_info.items():
             logger.debug(module)
 
-    def html_report(self):
-        raise NotImplementedError('html_report is not yet implemented')

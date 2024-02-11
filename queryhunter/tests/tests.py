@@ -4,14 +4,7 @@ from django.urls import reverse
 
 from queryhunter import query_hunter
 from queryhunter.reporting import QueryHunterPrintingOptions
-from queryhunter.tests.models import Author, Post
-from queryhunter.tests.my_module import get_authors
-
-
-def create_posts():
-    author = Author.objects.create(name='Billy')
-    for i in range(5):
-        Post.objects.create(content=f'content {i}', author=author)
+from queryhunter.tests.my_module import get_authors, create_posts
 
 
 @pytest.mark.django_db(transaction=True)
@@ -25,7 +18,7 @@ def test_queryhunter():
     assert len(file_data.lines) == 2
 
     first_line = file_data.lines[0]
-    assert first_line.line_no == 7
+    assert first_line.line_no == 13
     assert first_line.count == 1
     assert first_line.duration > 0
     assert first_line.sql == (
@@ -35,10 +28,10 @@ def test_queryhunter():
     assert first_line.meta_data == {'func': 'get_authors', 'username': 'Paul'}
 
     second_line = file_data.lines[1]
-    assert second_line.line_no == 8
+    assert second_line.line_no == 14
     assert second_line.count == 5
     assert second_line.duration > 0
-    assert second_line.code == 'authors.add(post.author.name)'
+    assert second_line.code == 'authors.append(post.author.name)'
 
 
 @pytest.mark.django_db(transaction=True)

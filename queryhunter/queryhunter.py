@@ -12,12 +12,6 @@ from django.conf import settings
 if TYPE_CHECKING:
     from queryhunter import QueryHunterReportingOptions
 
-"""
-TODO Functionality for MVP:
-- Middleware. Middleware should pass in URL and username by default.
-- HTML report
-"""
-
 
 @dataclass
 class Line:
