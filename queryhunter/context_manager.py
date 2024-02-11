@@ -8,8 +8,8 @@ from queryhunter.reporting import QueryHunterReportingOptions, QueryHunterReport
 
 
 class query_hunter(contextlib.ContextDecorator):
-    def __init__(self, reporting_options: QueryHunterReportingOptions = None, **context):
-        self.context = context
+    def __init__(self, reporting_options: QueryHunterReportingOptions = None, **meta_data):
+        self.meta_data = meta_data
 
         if reporting_options is None:
             try:
@@ -19,7 +19,7 @@ class query_hunter(contextlib.ContextDecorator):
         else:
             self._reporting_options = reporting_options
 
-        self._query_hunter = QueryHunter(reporting_options=self._reporting_options)
+        self._query_hunter = QueryHunter(reporting_options=self._reporting_options, meta_data=self.meta_data)
         self.query_info = self._query_hunter.query_info
         self.reporter = QueryHunterReporter(query_hunter=self._query_hunter)
         self._pre_execute_hook = connection.execute_wrapper(self._query_hunter)

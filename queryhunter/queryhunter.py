@@ -5,7 +5,7 @@ import os
 import time
 import traceback
 from dataclasses import dataclass
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Optional
 
 from django.conf import settings
 
@@ -27,10 +27,17 @@ class Line:
     sql: str
     count: int
     duration: float
+    meta_data: Optional[dict[str, str]] = None
 
     def __str__(self):
-        return (f'Line no: {self.line_no} | Code: {self.code} | '
-                f'Num. Queries: {self.count} | SQL: {self.sql} | Duration: {self.duration}')
+        string = (
+            f'Line no: {self.line_no} | Code: {self.code} | '
+            f'Num. Queries: {self.count} | SQL: {self.sql} | Duration: {self.duration}'
+        )
+        if self.meta_data:
+            for key, value in self.meta_data.items():
+                string += f' | {key}: {value}'
+        return string
 
 
 @dataclass
@@ -47,9 +54,10 @@ class Module:
 
 
 class QueryHunter:
-    def __init__(self, reporting_options: QueryHunterReportingOptions):
+    def __init__(self, reporting_options: QueryHunterReportingOptions, meta_data: dict[str, str] = None):
         self.reporting_options = reporting_options
         self.query_info: dict[str, Module] = {}
+        self.meta_data = meta_data
 
     def __call__(self, execute, sql, params, many, context):
         # Capture traceback at the point of SQL execution
@@ -86,7 +94,14 @@ class QueryHunter:
             try:
                 line = next(line for line in module.lines if line.line_no == line_no)
             except StopIteration:
-                line = Line(line_no=line_no, code=code, sql=reportable_sql, count=1, duration=duration)
+                line = Line(
+                    line_no=line_no,
+                    code=code,
+                    sql=reportable_sql,
+                    count=1,
+                    duration=duration,
+                    meta_data=self.meta_data,
+                )
                 module.lines.append(line)
             else:
                 line.count += 1

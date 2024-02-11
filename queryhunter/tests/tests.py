@@ -15,7 +15,7 @@ def create_posts():
 @pytest.mark.django_db(transaction=True)
 def test_queryhunter():
     create_posts()
-    with query_hunter() as qh:
+    with query_hunter(func='get_authors', username='Paul') as qh:
         get_authors()
     query_info = qh.query_info
     assert len(query_info) == 1
@@ -30,6 +30,7 @@ def test_queryhunter():
         'SELECT "tests_post"."id", "tests_post"."content", "tests_post"."author_id" FROM "tests_post"'
     )
     assert first_line.code == 'for post in posts:'
+    assert first_line.meta_data == {'func': 'get_authors', 'username': 'Paul'}
 
     second_line = file_data.lines[1]
     assert second_line.line_no == 8
