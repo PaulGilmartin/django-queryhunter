@@ -1,16 +1,27 @@
-import contextlib
+from __future__ import annotations
+
 import linecache
 import os
 import time
 import traceback
 from dataclasses import dataclass
+from typing import TYPE_CHECKING
 
 from django.conf import settings
-from django.db import connection
+
+if TYPE_CHECKING:
+    from queryhunter import QueryHunterReportingOptions
+
+"""
+TODO Functionality for MVP:
+- Middleware
+- Ability to pass in custom context meta data. Middleware should pass in URL and username by default.
+- Ability to somehow highlight rows with high duration or count. Maybe just print in red?
+"""
 
 
 @dataclass
-class LineData:
+class Line:
     line_no: int
     code: str
     sql: str
@@ -18,26 +29,27 @@ class LineData:
     duration: float
 
     def __str__(self):
-        return (f'Line no: {self.line_no} Code: {self.code} '
-                f'Num. Queries: {self.count} SQL: {self.sql} Duration: {self.duration}')
+        return (f'Line no: {self.line_no} | Code: {self.code} | '
+                f'Num. Queries: {self.count} | SQL: {self.sql} | Duration: {self.duration}')
 
 
 @dataclass
-class FileData:
-    filename: str
-    line_data: dict[int, LineData]
+class Module:
+    name: str
+    lines: list[Line]
 
     def __str__(self):
         data = ''
-        for line_data in self.line_data.values():
-            data += f'Module: {self.filename} {line_data} \n'
+        for line_data in self.lines:
+            data += f'Module: {self.name} | {line_data} \n'
         data.rstrip('\n')
         return data
 
 
 class QueryHunter:
-    def __init__(self):
-        self.query_info: dict[str, FileData] = {}
+    def __init__(self, reporting_options: QueryHunterReportingOptions):
+        self.reporting_options = reporting_options
+        self.query_info: dict[str, Module] = {}
 
     def __call__(self, execute, sql, params, many, context):
         # Capture traceback at the point of SQL execution
@@ -45,7 +57,6 @@ class QueryHunter:
 
         # Iterate through the traceback to find the relevant application frame
         app_frame = None
-
         for frame in reversed(stack_trace):
             filename = frame.filename
             if self.is_application_code(filename):
@@ -55,24 +66,37 @@ class QueryHunter:
         if app_frame:
             filename = app_frame.filename
             relative_path = str(os.path.relpath(app_frame.filename, settings.QUERYHUNTER_BASE_DIR))
-            file_data = self.query_info.get(relative_path, FileData(relative_path, line_data={}))
 
+            if self.reporting_options.modules is not None:
+                if relative_path not in self.reporting_options.modules:
+                    return execute(sql, params, many, context)
+
+            module = self.query_info.get(relative_path, Module(relative_path, lines=[]))
             line_no = app_frame.lineno
             code = self.get_code_from_line(filename, line_no)
             start = time.monotonic()
             result = execute(sql, params, many, context)
             duration = time.monotonic() - start
 
-            try:
-                line_data = file_data.line_data[line_no]
-            except KeyError:
-                line_data = LineData(line_no=line_no, code=code, sql=sql, count=1, duration=duration)
-                file_data.line_data[line_no] = line_data
+            if (max_length := self.reporting_options.max_sql_length) is not None:
+                reportable_sql = sql[:max_length]
             else:
-                line_data.count += 1
-                line_data.duration += duration
+                reportable_sql = sql
 
-            self.query_info[relative_path] = file_data
+            try:
+                line = next(line for line in module.lines if line.line_no == line_no)
+            except StopIteration:
+                line = Line(line_no=line_no, code=code, sql=reportable_sql, count=1, duration=duration)
+                module.lines.append(line)
+            else:
+                line.count += 1
+                line.duration += duration
+
+            reverse = self.reporting_options.sort_by.startswith('-')
+            sort_by = self.reporting_options.sort_by[1:] if reverse else self.reporting_options.sort_by
+            module.lines = sorted(module.lines, key=lambda x: getattr(x, sort_by), reverse=reverse)
+
+            self.query_info[relative_path] = module
             return result
         else:
             raise ValueError("Unable to determine application frame for SQL execution")
@@ -91,20 +115,3 @@ class QueryHunter:
     @staticmethod
     def get_code_from_line(filename: str, lineno: int) -> str:
         return linecache.getline(filename, lineno).strip()
-
-
-class query_hunter(contextlib.ContextDecorator):
-    def __init__(self, **metadata):
-        self.metadata = metadata
-        self._query_hunter = QueryHunter()
-        self._pre_execute_hook = connection.execute_wrapper(self._query_hunter)
-        self.query_info = self._query_hunter.query_info
-
-    def __enter__(self):
-        self._pre_execute_hook.__enter__()
-        return self
-
-    def __exit__(self, *exc):
-        for _filename, file_data in self._query_hunter.query_info.items():
-            print(file_data)
-        self._pre_execute_hook.__exit__(*exc)
