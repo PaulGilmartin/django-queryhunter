@@ -1,5 +1,6 @@
 from pathlib import Path
 
+import queryhunter
 from queryhunter.reporting import QueryHunterLoggingOptions
 
 INSTALLED_APPS = [
@@ -33,7 +34,7 @@ MIDDLEWARE = [
 ]
 
 
-QUERYHUNTER_BASE_DIR = str(Path(__file__).resolve().parent.parent)
+QUERYHUNTER_BASE_DIR = queryhunter.default_base_dir()
 #QUERYHUNTER_REPORTING_OPTIONS = QueryHunterLoggingOptions(sort_by='-count')
 
 

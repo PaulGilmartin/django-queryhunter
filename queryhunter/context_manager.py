@@ -7,7 +7,7 @@ from .queryhunter import QueryHunter
 from queryhunter.reporting import QueryHunterReportingOptions, QueryHunterReporter, QueryHunterPrintingOptions
 
 
-class query_hunter(contextlib.ContextDecorator):
+class queryhunter(contextlib.ContextDecorator):
     def __init__(self, reporting_options: QueryHunterReportingOptions = None, **meta_data):
         self.meta_data = meta_data
 

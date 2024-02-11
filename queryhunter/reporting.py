@@ -64,6 +64,7 @@ class QueryHunterReporter:
                     print(f'   {RED}{line}')
                 else:
                     print(f'   {GREEN}{line}')
+            print('\n')
 
     def log_report(self):
         logging.basicConfig(filename=self.options.log_file, level=logging.DEBUG, format='%(message)s')
