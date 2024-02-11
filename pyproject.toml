@@ -18,7 +18,7 @@ name = "django-queryhunter"
 packages = [
   { include = "queryhunter" }
 ]
-version = "0.1.0"
+version = "0.1.1"
 description = "Map your Django application code to the SQL queries it produces."
 authors = ["Paul Gilmartin"]
 classifiers = [
