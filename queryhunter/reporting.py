@@ -55,7 +55,7 @@ class QueryHunterReporter:
         GREEN = "\033[32m"
         BOLD = "\033[1m"
         for name, module in self.query_info.items():
-            print(f'{BOLD}name')
+            print(f'{BOLD}{name}')
             print('=' * 2 * len(name))
             for line in module.lines:
                 if line.duration >= self.options.duration_highlighting_threshold:
