@@ -24,7 +24,16 @@ DATABASES = {
     }
 }
 
+ROOT_URLCONF = 'queryhunter.tests.urls'
+SECRET_KEY = '1234'
+
+
+MIDDLEWARE = [
+    'queryhunter.middleware.QueryHunterMiddleware',
+]
+
 
 QUERYHUNTER_BASE_DIR = str(Path(__file__).resolve().parent.parent)
+QUERYHUNTER_REPORTING_OPTIONS = QueryHunterLoggingOptions(sort_by='-count')
 
-#QUERYHUNTER_REPORTING_OPTIONS = QueryHunterLoggingOptions(sort_by='-count')
+

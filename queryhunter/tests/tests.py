@@ -1,4 +1,6 @@
+from django.test import Client
 import pytest
+from django.urls import reverse
 
 from queryhunter import query_hunter
 from queryhunter.reporting import QueryHunterPrintingOptions
@@ -86,3 +88,11 @@ def test_queryhunter_modules_reporting_options():
     assert first_line.count == 1
     second_line = file_data.lines[1]
     assert second_line.count == 5
+
+
+@pytest.mark.django_db(transaction=True)
+def test_queryhunter_middleware():
+    create_posts()
+    client = Client()
+    response = client.get(reverse('authors'))
+    assert response.status_code == 200

@@ -14,9 +14,8 @@ if TYPE_CHECKING:
 
 """
 TODO Functionality for MVP:
-- Middleware
-- Ability to pass in custom context meta data. Middleware should pass in URL and username by default.
-- Ability to somehow highlight rows with high duration or count. Maybe just print in red?
+- Middleware. Middleware should pass in URL and username by default.
+- HTML report
 """
 
 

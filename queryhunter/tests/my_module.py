@@ -1,11 +1,13 @@
-from queryhunter.tests.models import Post
+from queryhunter.tests.models import Post, Author
 
 
-def get_authors() -> None:
-    authors = set()
+def get_authors() -> list[Author]:
+    authors = []
     posts = Post.objects.all()
     for post in posts:
-        authors.add(post.author.name)
+        authors.append(post.author.name)
+    return authors
+
 
 
 
