@@ -116,6 +116,7 @@ section.
 
 ## Middleware
 
+`queryhunter` also ships with a middleware which, when installed, will profile all requests to your Django application.
 To install the middleware, add `queryhunter.middleware.QueryHunterMiddleware` to your `MIDDLEWARE` setting:
 ```python
 # settings.py
@@ -124,9 +125,17 @@ MIDDLEWARE = [
     'queryhunter.middleware.QueryHunterMiddleware',
 ]
 ```
-This means that all requests will be run under the `queryhunter.queryhunter` context manager. As well as
-the usual query data reported by queryhunter, the middleware will also report the URL and the method of the request
-which caused the queries to be executed.
+Under the hood, the middleware will run all requests under the `queryhunter.queryhunter` context manager.
+As well as the usual query data reported by queryhunter, the middleware will also report the URL and the method of the request
+which caused the queries to be executed. Here's some sample output:
+
+
+```bash
+queryhunter/tests/my_module.py
+====================================
+Line no: 8 | Code: for post in posts: | Num. Queries: 1 | Duration: 0.04 | url: /authors | method: GET | SQL: SELECT "tests_post"."id", "tests_post"."content", "tests_post"."author_id" FROM "tests_post"
+Line no: 9 | Code: authors.append(post.author.name) | Num. Queries: 5 | Duration: 0.05 | url: /authors | method: GET | SQL: SELECT "tests_author"."id", "tests_author"."name" FROM "tests_author" WHERE "tests_author"."id" = %s LIMIT 21
+```
 
 
 ## Reporting Options
