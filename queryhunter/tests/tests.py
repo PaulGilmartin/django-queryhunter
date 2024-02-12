@@ -14,7 +14,7 @@ def test_queryhunter():
         get_authors()
     query_info = qh.query_info
     assert len(query_info) == 1
-    file_data = query_info['queryhunter/tests/my_module.py']
+    file_data = query_info['django-queryhunter/queryhunter/tests/my_module.py']
     assert len(file_data.lines) == 2
 
     first_line = file_data.lines[0]
@@ -39,8 +39,8 @@ def test_queryhunter_modules_reporting_options():
     create_posts()
     options = QueryHunterPrintingOptions(
         modules=[
-            'queryhunter/tests/my_module.py',
-            'queryhunter/tests/not_my_module.py',
+            'django-queryhunter/queryhunter/tests/my_module.py',
+            'django-queryhunter/queryhunter/tests/not_my_module.py',
         ],
     )
     with queryhunter(reporting_options=options) as qh:
@@ -48,7 +48,7 @@ def test_queryhunter_modules_reporting_options():
     query_info = qh.query_info
     assert len(query_info) == 1
 
-    options = QueryHunterPrintingOptions(modules=['queryhunter/tests/not_my_module.py'])
+    options = QueryHunterPrintingOptions(modules=['django-queryhunter/queryhunter/tests/not_my_module.py'])
     with queryhunter(reporting_options=options) as qh:
         get_authors()
     query_info = qh.query_info
@@ -58,7 +58,7 @@ def test_queryhunter_modules_reporting_options():
     with queryhunter(reporting_options=options) as qh:
         get_authors()
     query_info = qh.query_info
-    file_data = query_info['queryhunter/tests/my_module.py']
+    file_data = query_info['django-queryhunter/queryhunter/tests/my_module.py']
     first_line = file_data.lines[0]
     assert len(first_line.sql) == 5
 
@@ -66,7 +66,7 @@ def test_queryhunter_modules_reporting_options():
     with queryhunter(reporting_options=options) as qh:
         get_authors()
     query_info = qh.query_info
-    file_data = query_info['queryhunter/tests/my_module.py']
+    file_data = query_info['django-queryhunter/queryhunter/tests/my_module.py']
     first_line = file_data.lines[0]
     assert first_line.count == 5
     second_line = file_data.lines[1]
@@ -76,7 +76,7 @@ def test_queryhunter_modules_reporting_options():
     with queryhunter(reporting_options=options) as qh:
         get_authors()
     query_info = qh.query_info
-    file_data = query_info['queryhunter/tests/my_module.py']
+    file_data = query_info['django-queryhunter/queryhunter/tests/my_module.py']
     first_line = file_data.lines[0]
     assert first_line.count == 1
     second_line = file_data.lines[1]

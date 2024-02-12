@@ -4,6 +4,7 @@ from .context_manager import queryhunter
 from .reporting import QueryHunterReportingOptions
 
 
-default_base_dir = lambda: str(Path(__file__).resolve().parent.parent)
+def default_base_dir(file) -> str:
+    return str(Path(file).resolve().parent.parent)
 
 

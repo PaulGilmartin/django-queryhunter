@@ -50,7 +50,7 @@ the way that queryhunter knows where to look for your application code. You can 
 ```python
 import queryhunter
 
-QUERYHUNTER_BASE_DIR = queryhunter.default_base_dir()
+QUERYHUNTER_BASE_DIR = queryhunter.default_base_dir(__file__)
 ```
 
 ## Usage via Example

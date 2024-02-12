@@ -34,7 +34,7 @@ MIDDLEWARE = [
 ]
 
 
-QUERYHUNTER_BASE_DIR = queryhunter.default_base_dir()
+QUERYHUNTER_BASE_DIR = queryhunter.default_base_dir(__file__)
 #QUERYHUNTER_REPORTING_OPTIONS = QueryHunterLoggingOptions(sort_by='-count')
 
 
