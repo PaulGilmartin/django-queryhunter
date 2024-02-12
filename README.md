@@ -14,11 +14,11 @@ One particularly useful feature of this view of profiling is quickly identifying
   application code which are responsible for executing SQL queries, including data on:
   - The module name and the line number of the code which executed the query.
   - The executing code itself on that line.
-  - The number of times that line was responsible for executing a query and the total time that line spent
-    executing queries.
+  - The number queries that line was responsible for invoking was and the total time the queries invoked
+    by that line took to execute.
   - The SQL query itself. Note that we only display the _last_ SQL query executed on that line.
 - Configurable options for filtering, sorting, printing or logging the results.
-- Lightweight: `queryhunter` Django's [database hooks](https://docs.djangoproject.com/en/5.0/topics/db/instrumentation/)
+- Lightweight: `queryhunter` uses Django's [database hooks](https://docs.djangoproject.com/en/5.0/topics/db/instrumentation/)
   and the built-in `linecache` module to provide a simple and efficient way to map SQL queries to the lines of your
   application code which executed them.
 
@@ -116,7 +116,7 @@ section.
 
 ## Middleware
 
-`queryhunter` also ships with a middleware which, when installed, will profile all requests to your Django application.
+**queryhunter** also ships with a middleware which, when installed, will profile all requests to your Django application.
 To install the middleware, add `queryhunter.middleware.QueryHunterMiddleware` to your `MIDDLEWARE` setting:
 ```python
 # settings.py
@@ -140,4 +140,68 @@ Line no: 9 | Code: authors.append(post.author.name) | Num. Queries: 5 | Duration
 
 ## Reporting Options
 
-TODO
+**queryhunter** can be configured with a number of options which dictate the way the profiling data is reported and displayed. 
+We can declare the options globally via the `QUERYHUNTER_REPORTING_OPTIONS` setting in our `settings.py` file, or we can 
+pass reporting options more granularly to the `queryhunter` context manager. 
+
+In either case, options are declared as an instance of either the `QueryHunterPrintingOptions` class or the 
+`QueryHunterLoggingOptions` class.
+
+
+By default, reporting will be based on the default values of `QueryHunterPrintingOptions`.
+If for example you wanted to set it so that your output is always so that the lines of code which execute the most queries
+are printed first, you would declare the following in your `settings.py` file:
+
+```python
+# settings.py
+from queryhunter import QueryHunterPrintingOptions
+
+QUERYHUNTER_REPORTING_OPTIONS = QueryHunterPrintingOptions(sort_by='-count')
+```
+
+or, alternatively, you could pass the instance into a specific context manager:
+
+```python
+from queryhunter import queryhunter, QueryHunterPrintingOptions
+
+with queryhunter(reporting_options=QueryHunterPrintingOptions(sort_by='-count')):
+    ...
+```
+
+If a context manager uses an explicit instance of `QueryHunterPrintingOptions` or `QueryHunterLoggingOptions`,
+it will override the global `QUERYHUNTER_REPORTING_OPTIONS` setting.
+
+
+### QueryHunterPrintingOptions
+
+Use the `QueryHunterPrintingOptions` class if you want to print the profiling results to the console.
+`QueryHunterPrintingOptions` class can be configured via the attributes below:
+
+- `sort_by`: A string valued property which determines the order in which each line of code is printed
+   for each module profiled. Options are `line_no, -line_no, count, -count, duration, -duration`.
+   The default is `line_no`.
+- `modules`: An optional list of strings which can be used to filter the modules which are profiled. 
+   The default is `None`, which means all modules touched within the context are profiled.
+- `max_sql_length`: An optional integer valued property which determines the maximum length of the SQL query printed.
+   The default is None, meaning the entire SQL query is printed.
+- `count_highlighting_threshold`: An integer valued property which determines the threshold for the number of 
+   queries executed on a line of code before it is highlighted red in the output. The default is 5.
+- `duration_highlighting_threshold`: A float valued property which determines the threshold for the no. of seconds
+   a line of code can spend executing before it is highlighted red in the output. The default is 0.1.
+
+
+
+### QueryHunterLoggingOptions
+
+Use the `QueryHunterLoggingOptions` class if you want to log the profiling results to a file.
+`QueryHunterPrintingOptions` class can be configured via the attributes below:
+
+- `sort_by`: A string valued property which determines the order in which each line of code is printed
+   for each module profiled. Options are `line_no, -line_no, count, -count, duration, -duration`.
+   The default is `line_no`.
+- `modules`: An optional list of strings which can be used to filter the modules which are profiled. 
+   The default is `None`, which means all modules touched within the context are profiled.
+- `max_sql_length`: An optional integer valued property which determines the maximum length of the SQL query printed.
+   The default is None, meaning the entire SQL query is printed.
+- `log_file`: A string valued property which determines the file to which the profiling data is logged.
+   The default is `queryhunter.log`.

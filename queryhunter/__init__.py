@@ -1,7 +1,7 @@
 from pathlib import Path
 
 from .context_manager import queryhunter
-from .reporting import QueryHunterReportingOptions
+from .reporting import QueryHunterReportingOptions, QueryHunterLoggingOptions, QueryHunterPrintingOptions
 
 
 def default_base_dir(file) -> str:
