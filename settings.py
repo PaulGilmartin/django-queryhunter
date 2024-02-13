@@ -1,7 +1,7 @@
 from pathlib import Path
 
 import queryhunter
-from queryhunter.reporting import QueryHunterLoggingOptions
+from queryhunter.reporting import LoggingOptions
 
 INSTALLED_APPS = [
     'django.contrib.auth',
@@ -35,6 +35,6 @@ MIDDLEWARE = [
 
 
 QUERYHUNTER_BASE_DIR = queryhunter.default_base_dir(__file__)
-#QUERYHUNTER_REPORTING_OPTIONS = QueryHunterLoggingOptions(sort_by='-count')
+#QUERYHUNTER_REPORTING_OPTIONS = LoggingOptions(sort_by='-count')
 
 

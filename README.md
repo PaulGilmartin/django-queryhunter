@@ -144,38 +144,38 @@ Line no: 9 | Code: authors.append(post.author.name) | Num. Queries: 5 | Duration
 We can declare the options globally via the `QUERYHUNTER_REPORTING_OPTIONS` setting in our `settings.py` file, or we can 
 pass reporting options more granularly to the `queryhunter` context manager. 
 
-In either case, options are declared as an instance of either the `QueryHunterPrintingOptions` class or the 
-`QueryHunterLoggingOptions` class.
+In either case, options are declared as an instance of either the `PrintingOptions` class or the 
+`LoggingOptions` class.
 
 
-By default, reporting will be based on the default values of `QueryHunterPrintingOptions`.
+By default, reporting will be based on the default values of `PrintingOptions`.
 If for example you wanted to set it so that your output is always so that the lines of code which execute the most queries
 are printed first, you would declare the following in your `settings.py` file:
 
 ```python
 # settings.py
-from queryhunter import QueryHunterPrintingOptions
+from queryhunter import PrintingOptions
 
-QUERYHUNTER_REPORTING_OPTIONS = QueryHunterPrintingOptions(sort_by='-count')
+QUERYHUNTER_REPORTING_OPTIONS = PrintingOptions(sort_by='-count')
 ```
 
 or, alternatively, you could pass the instance into a specific context manager:
 
 ```python
-from queryhunter import queryhunter, QueryHunterPrintingOptions
+from queryhunter import queryhunter, PrintingOptions
 
-with queryhunter(reporting_options=QueryHunterPrintingOptions(sort_by='-count')):
+with queryhunter(reporting_options=PrintingOptions(sort_by='-count')):
     ...
 ```
 
-If a context manager uses an explicit instance of `QueryHunterPrintingOptions` or `QueryHunterLoggingOptions`,
+If a context manager uses an explicit instance of `PrintingOptions` or `LoggingOptions`,
 it will override the global `QUERYHUNTER_REPORTING_OPTIONS` setting.
 
 
-### QueryHunterPrintingOptions
+### PrintingOptions
 
-Use the `QueryHunterPrintingOptions` class if you want to print the profiling results to the console.
-`QueryHunterPrintingOptions` class can be configured via the attributes below:
+Use the `PrintingOptions` class if you want to print the profiling results to the console.
+`PrintingOptions` class can be configured via the attributes below:
 
 - `sort_by`: A string valued property which determines the order in which each line of code is printed
    for each module profiled. Options are `line_no, -line_no, count, -count, duration, -duration`.
@@ -191,10 +191,10 @@ Use the `QueryHunterPrintingOptions` class if you want to print the profiling re
 
 
 
-### QueryHunterLoggingOptions
+### LoggingOptions
 
-Use the `QueryHunterLoggingOptions` class if you want to log the profiling results to a file.
-`QueryHunterPrintingOptions` class can be configured via the attributes below:
+Use the `LoggingOptions` class if you want to log the profiling results to a file.
+`LoggingOptions` class can be configured via the attributes below:
 
 - `sort_by`: A string valued property which determines the order in which each line of code is printed
    for each module profiled. Options are `line_no, -line_no, count, -count, duration, -duration`.

@@ -10,7 +10,7 @@ REPORT_TYPE_OPTIONS = ['print', 'log', 'html']
 
 
 @dataclass
-class QueryHunterReportingOptions:
+class ReportingOptions:
     report_type: str = 'print'
     sort_by: str = 'line_no'
     modules: Optional[list[str]] = None
@@ -24,14 +24,14 @@ class QueryHunterReportingOptions:
 
 
 @dataclass
-class QueryHunterPrintingOptions(QueryHunterReportingOptions):
+class PrintingOptions(ReportingOptions):
     report_type: str = 'print'
     count_highlighting_threshold: int = 5
     duration_highlighting_threshold: float = 0.5
 
 
 @dataclass
-class QueryHunterLoggingOptions(QueryHunterReportingOptions):
+class LoggingOptions(ReportingOptions):
     report_type: str = 'log'
     log_file: str = 'queryhunter.log'
 

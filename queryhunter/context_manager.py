@@ -4,11 +4,11 @@ from django.conf import settings
 from django.db import connection
 
 from .queryhunter import QueryHunter
-from queryhunter.reporting import QueryHunterReportingOptions, QueryHunterReporter, QueryHunterPrintingOptions
+from queryhunter.reporting import ReportingOptions, QueryHunterReporter, PrintingOptions
 
 
 class queryhunter(contextlib.ContextDecorator):
-    def __init__(self, reporting_options: QueryHunterReportingOptions = None, **meta_data):
+    def __init__(self, reporting_options: ReportingOptions = None, **meta_data):
         if not hasattr(settings, 'QUERYHUNTER_BASE_DIR'):
             raise ValueError('QUERYHUNTER_BASE_DIR setting is required')
 
@@ -18,7 +18,7 @@ class queryhunter(contextlib.ContextDecorator):
             try:
                 self._reporting_options = settings.QUERYHUNTER_REPORTING_OPTIONS
             except AttributeError:
-                self._reporting_options = QueryHunterPrintingOptions()
+                self._reporting_options = PrintingOptions()
         else:
             self._reporting_options = reporting_options
 

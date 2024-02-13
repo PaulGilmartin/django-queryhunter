@@ -3,7 +3,7 @@ import pytest
 from django.urls import reverse
 
 from queryhunter import queryhunter
-from queryhunter.reporting import QueryHunterPrintingOptions
+from queryhunter.reporting import PrintingOptions
 from queryhunter.tests.my_module import get_authors, create_posts
 
 
@@ -37,7 +37,7 @@ def test_queryhunter():
 @pytest.mark.django_db(transaction=True)
 def test_queryhunter_modules_reporting_options():
     create_posts()
-    options = QueryHunterPrintingOptions(
+    options = PrintingOptions(
         modules=[
             'django-queryhunter/queryhunter/tests/my_module.py',
             'django-queryhunter/queryhunter/tests/not_my_module.py',
@@ -48,13 +48,13 @@ def test_queryhunter_modules_reporting_options():
     query_info = qh.query_info
     assert len(query_info) == 1
 
-    options = QueryHunterPrintingOptions(modules=['django-queryhunter/queryhunter/tests/not_my_module.py'])
+    options = PrintingOptions(modules=['django-queryhunter/queryhunter/tests/not_my_module.py'])
     with queryhunter(reporting_options=options) as qh:
         get_authors()
     query_info = qh.query_info
     assert len(query_info) == 0
 
-    options = QueryHunterPrintingOptions(max_sql_length=5)
+    options = PrintingOptions(max_sql_length=5)
     with queryhunter(reporting_options=options) as qh:
         get_authors()
     query_info = qh.query_info
@@ -62,7 +62,7 @@ def test_queryhunter_modules_reporting_options():
     first_line = file_data.lines[0]
     assert len(first_line.sql) == 5
 
-    options = QueryHunterPrintingOptions(sort_by='-count')
+    options = PrintingOptions(sort_by='-count')
     with queryhunter(reporting_options=options) as qh:
         get_authors()
     query_info = qh.query_info
@@ -72,7 +72,7 @@ def test_queryhunter_modules_reporting_options():
     second_line = file_data.lines[1]
     assert second_line.count == 1
 
-    options = QueryHunterPrintingOptions(sort_by='count')
+    options = PrintingOptions(sort_by='count')
     with queryhunter(reporting_options=options) as qh:
         get_authors()
     query_info = qh.query_info
