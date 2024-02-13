@@ -9,6 +9,9 @@ from queryhunter.reporting import QueryHunterReportingOptions, QueryHunterReport
 
 class queryhunter(contextlib.ContextDecorator):
     def __init__(self, reporting_options: QueryHunterReportingOptions = None, **meta_data):
+        if not hasattr(settings, 'QUERYHUNTER_BASE_DIR'):
+            raise ValueError('QUERYHUNTER_BASE_DIR setting is required')
+
         self.meta_data = meta_data
 
         if reporting_options is None:
