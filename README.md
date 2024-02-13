@@ -17,6 +17,7 @@ One particularly useful feature of this view of profiling is quickly identifying
   - The number queries that line was responsible for invoking was and the total time the queries invoked
     by that line took to execute.
   - The SQL query itself. Note that we only display the _last_ SQL query executed on that line.
+  - Customisable metadata such as the URL and method of the request which caused the queries to be executed.
 - Configurable options for filtering, sorting, printing or logging the results.
 - Lightweight: `queryhunter` uses Django's [database hooks](https://docs.djangoproject.com/en/5.0/topics/db/instrumentation/)
   and the built-in `linecache` module to provide a simple and efficient way to map SQL queries to the lines of your
@@ -205,3 +206,20 @@ Use the `LoggingOptions` class if you want to log the profiling results to a fil
    The default is None, meaning the entire SQL query is printed.
 - `log_file`: A string valued property which determines the file to which the profiling data is logged.
    The default is `queryhunter.log`.
+
+
+## Custom MetaData
+
+You can add custom metadata to queryhunter's output by passing in the `metadata` argument to the 
+`queryhunter` context manager. In fact, this is precisely what the middleware does to add the 
+URL and method of the request:
+    
+```python
+from queryhunter import queryhunter
+
+with queryhunter(meta_data=dict(url=request.path, method=request.method)):
+    ...
+```
+
+Adding custom meta data can be particularly useful when you want to associate an 
+identifier with the profiling data.

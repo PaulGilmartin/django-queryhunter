@@ -8,7 +8,7 @@ from queryhunter.reporting import ReportingOptions, QueryHunterReporter, Printin
 
 
 class queryhunter(contextlib.ContextDecorator):
-    def __init__(self, reporting_options: ReportingOptions = None, **meta_data):
+    def __init__(self, reporting_options: ReportingOptions = None, meta_data: dict[str, str] = None):
         if not hasattr(settings, 'QUERYHUNTER_BASE_DIR'):
             raise ValueError('QUERYHUNTER_BASE_DIR setting is required')
 

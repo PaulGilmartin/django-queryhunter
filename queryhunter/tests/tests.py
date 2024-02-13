@@ -10,7 +10,7 @@ from queryhunter.tests.my_module import get_authors, create_posts
 @pytest.mark.django_db(transaction=True)
 def test_queryhunter():
     create_posts()
-    with queryhunter(func='get_authors', username='Paul') as qh:
+    with queryhunter(meta_data=dict(func='get_authors', username='Paul'))as qh:
         get_authors()
     query_info = qh.query_info
     assert len(query_info) == 1
