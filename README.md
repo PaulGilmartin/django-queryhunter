@@ -26,6 +26,8 @@ One particularly useful feature of this view of profiling is quickly identifying
 Here is some sample output:
 
 ```bash
+queryhunter/tests/my_module.py
+====================================
 Line no: 13 | Code: for post in posts: | Num. Queries: 1 | SQL: SELECT "tests_post"."id", "tests_post"."content", "tests_post"."author_id" FROM "tests_post" | Duration: 4.783299999999713e-05
 Line no: 14 | Code: authors.append(post.author.name) | Num. Queries: 5 | SQL: SELECT "tests_author"."id", "tests_author"."name" FROM "tests_author" WHERE "tests_author"."id" = %s LIMIT 21 | Duration: 8.804199999801199e-05
 ```
@@ -208,7 +210,7 @@ Use the `LoggingOptions` class if you want to log the profiling results to a fil
    The default is `queryhunter.log`.
 
 
-## Custom MetaData
+## Custom Metadata
 
 You can add custom metadata to queryhunter's output by passing in the `metadata` argument to the 
 `queryhunter` context manager. In fact, this is precisely what the middleware does to add the 
