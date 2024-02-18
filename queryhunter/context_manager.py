@@ -24,7 +24,7 @@ class queryhunter(contextlib.ContextDecorator):
 
         self._query_hunter = QueryHunter(reporting_options=self._reporting_options, meta_data=self.meta_data)
         self.query_info = self._query_hunter.query_info
-        self.reporter = QueryHunterReporter(query_hunter=self._query_hunter)
+        self.reporter = QueryHunterReporter.create(queryhunter=self._query_hunter)
         self._pre_execute_hook = connection.execute_wrapper(self._query_hunter)
 
     def __enter__(self):

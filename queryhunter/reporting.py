@@ -1,4 +1,3 @@
-import logging
 from dataclasses import dataclass
 from typing import Optional
 
@@ -33,7 +32,7 @@ class PrintingOptions(ReportingOptions):
 @dataclass
 class LoggingOptions(ReportingOptions):
     report_type: str = 'log'
-    log_file: str = 'queryhunter.log'
+    logger_name: str = 'queryhunter'
 
 
 class QueryHunterReporter:
@@ -42,15 +41,18 @@ class QueryHunterReporter:
         self.query_info = query_hunter.query_info
         self.options = query_hunter.reporting_options
 
-    def report(self):
-        if self.options.report_type == 'print':
-            self.print_report()
-        elif self.options.report_type == 'log':
-            self.log_report()
+    @classmethod
+    def create(cls, queryhunter: QueryHunter):
+        if queryhunter.reporting_options.report_type == 'print':
+            return PrintingQueryHunterReporter(queryhunter)
+        elif queryhunter.reporting_options.report_type == 'log':
+            return LoggingQueryHunterReporter(queryhunter)
         else:
-            raise ValueError(f'Invalid report_type: {self.options.report_type}')
+            raise ValueError(f'Invalid report_type: {queryhunter.reporting_options.report_type}')
 
-    def print_report(self):
+
+class PrintingQueryHunterReporter(QueryHunterReporter):
+    def report(self):
         RED = "\033[31m"
         GREEN = "\033[32m"
         BOLD = "\033[1m"
@@ -66,9 +68,9 @@ class QueryHunterReporter:
                     print(f'   {GREEN}{line}')
             print('\n')
 
-    def log_report(self):
-        logging.basicConfig(filename=self.options.log_file, level=logging.DEBUG, format='%(message)s')
-        logger = logging.getLogger()
-        for name, module in self.query_info.items():
-            logger.debug(module)
+
+class LoggingQueryHunterReporter(QueryHunterReporter):
+    def report(self):
+        for _name, module in self.query_info.items():
+            module.log()
 

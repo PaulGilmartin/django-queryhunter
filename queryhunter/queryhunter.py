@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import linecache
+import logging
 import os
 import time
 import traceback
@@ -44,6 +45,12 @@ class Module:
             data += f'Module: {self.name} | {line_data} \n'
         data.rstrip('\n')
         return data
+
+    def log(self):
+        logger_name = settings.QUERYHUNTER_REPORTING_OPTIONS.logger_name
+        logger = logging.getLogger(logger_name)
+        for line in self.lines:
+            logger.info(f'Module: {self.name} | {line}')
 
 
 class QueryHunter:

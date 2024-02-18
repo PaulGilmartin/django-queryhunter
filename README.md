@@ -196,9 +196,11 @@ Use the `PrintingOptions` class if you want to print the profiling results to th
 
 ### LoggingOptions
 
-Use the `LoggingOptions` class if you want to log the profiling results to a file.
+Use the `LoggingOptions` class if you want to log the profiling results to a file. 
 `LoggingOptions` class can be configured via the attributes below:
 
+- `logger_name`: A string valued property which determines the name of the logger which will be used to log the output.
+   The default is `queryhunter`.
 - `sort_by`: A string valued property which determines the order in which each line of code is printed
    for each module profiled. Options are `line_no, -line_no, count, -count, duration, -duration`.
    The default is `line_no`.
@@ -206,8 +208,47 @@ Use the `LoggingOptions` class if you want to log the profiling results to a fil
    The default is `None`, which means all modules touched within the context are profiled.
 - `max_sql_length`: An optional integer valued property which determines the maximum length of the SQL query printed.
    The default is None, meaning the entire SQL query is printed.
-- `log_file`: A string valued property which determines the file to which the profiling data is logged.
-   The default is `queryhunter.log`.
+
+
+Logging is compatible with the standard Python logging library and its [Django extension](https://docs.djangoproject.com/en/5.0/topics/logging/).
+For example, to have **queryhunter** log to a file called `queryhunter.log`, we can add the following to our `settings.py` file:
+
+```python
+QUERYHUNTER_REPORTING_OPTIONS = LoggingOptions(logger_name='queryhunter', sort_by='-count')
+
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'formatters': {
+        'standard': {
+            'format': '%(asctime)s - %(message)s'
+        },
+    },
+    'handlers': {
+        'queryhunter_file': {
+            'level': 'DEBUG',
+            'class': 'logging.FileHandler',
+            'filename': QUERYHUNTER_BASE_DIR + '/queryhunter.log',
+            'formatter': 'standard',
+        },
+    },
+    'loggers': {
+        QUERYHUNTER_REPORTING_OPTIONS.logger_name: {
+            'handlers': ['queryhunter_file'],
+            'level': 'DEBUG',
+            'propagate': True,
+        },
+    },
+}
+
+```
+
+This will produce a log file `queryhunter.log` which has content like below:
+
+```bash
+2024-02-18 07:04:16,182 - Module: django-queryhunter/queryhunter/tests/my_module.py | Line no: 14 | Code: authors.append(post.author.name) | Num. Queries: 5 | SQL: SELECT "tests_author"."id", "tests_author"."name" FROM "tests_author" WHERE "tests_author"."id" = %s LIMIT 21 | Duration: 3.174999999999706e-05 | url: /authors/ | method: GET
+2024-02-18 07:04:16,182 - Module: django-queryhunter/queryhunter/tests/my_module.py | Line no: 13 | Code: for post in posts: | Num. Queries: 1 | SQL: SELECT "tests_post"."id", "tests_post"."content", "tests_post"."author_id" FROM "tests_post" | Duration: 1.2500000000026379e-05 | url: /authors/ | method: GET
+```
 
 
 ## Custom Metadata
