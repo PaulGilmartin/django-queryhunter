@@ -46,9 +46,7 @@ class Module:
         data.rstrip('\n')
         return data
 
-    def log(self):
-        logger_name = settings.QUERYHUNTER_REPORTING_OPTIONS.logger_name
-        logger = logging.getLogger(logger_name)
+    def log(self, logger: logging.Logger):
         for line in self.lines:
             logger.info(f'Module: {self.name} | {line}')
 

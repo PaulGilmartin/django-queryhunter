@@ -13,7 +13,6 @@ class queryhunter(contextlib.ContextDecorator):
             raise ValueError('QUERYHUNTER_BASE_DIR setting is required')
 
         self.meta_data = meta_data
-
         if reporting_options is None:
             try:
                 self._reporting_options = settings.QUERYHUNTER_REPORTING_OPTIONS

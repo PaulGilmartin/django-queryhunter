@@ -3,7 +3,7 @@ import pytest
 from django.urls import reverse
 
 from queryhunter import queryhunter
-from queryhunter.reporting import PrintingOptions
+from queryhunter.reporting import PrintingOptions, LoggingOptions
 from queryhunter.tests.my_module import get_authors, create_posts
 
 
@@ -89,3 +89,18 @@ def test_queryhunter_middleware():
     client = Client()
     response = client.get(reverse('authors'))
     assert response.status_code == 200
+
+
+@pytest.mark.django_db(transaction=True)
+def test_logging():
+    create_posts()
+    with queryhunter(reporting_options=LoggingOptions()) as qh:
+        get_authors()
+    query_info = qh.query_info
+    assert len(query_info) == 1
+    file_data = query_info['django-queryhunter/queryhunter/tests/my_module.py']
+    assert len(file_data.lines) == 2
+    first_line = file_data.lines[0]
+    assert first_line.line_no == 13
+    assert first_line.count == 1
+    assert first_line.duration > 0

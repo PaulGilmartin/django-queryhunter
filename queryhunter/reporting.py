@@ -1,3 +1,4 @@
+import logging
 from dataclasses import dataclass
 from typing import Optional
 
@@ -71,6 +72,8 @@ class PrintingQueryHunterReporter(QueryHunterReporter):
 
 class LoggingQueryHunterReporter(QueryHunterReporter):
     def report(self):
+        logger_name = self.options.logger_name
+        logger = logging.getLogger(logger_name)
         for _name, module in self.query_info.items():
-            module.log()
+            module.log(logger)
 
