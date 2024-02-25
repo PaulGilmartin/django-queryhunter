@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 import linecache
-import logging
 import os
 import time
 import traceback
@@ -11,7 +10,7 @@ from typing import TYPE_CHECKING, Optional
 from django.conf import settings
 
 if TYPE_CHECKING:
-    from queryhunter import QueryHunterReportingOptions
+    from queryhunter import ReportingOptions
 
 
 @dataclass
@@ -46,13 +45,9 @@ class Module:
         data.rstrip('\n')
         return data
 
-    def log(self, logger: logging.Logger):
-        for line in self.lines:
-            logger.info(f'Module: {self.name} | {line}')
-
 
 class QueryHunter:
-    def __init__(self, reporting_options: QueryHunterReportingOptions, meta_data: dict[str, str] = None):
+    def __init__(self, reporting_options: ReportingOptions, meta_data: dict[str, str] = None):
         self.reporting_options = reporting_options
         self.query_info: dict[str, Module] = {}
         self.meta_data = meta_data
@@ -121,7 +116,7 @@ class QueryHunter:
         except AttributeError:
             raise ValueError(
                 "QUERYHUNTER_BASE_DIR not set in settings. "
-                "Define manually or use the built in queryhunter.base_dir function",
+                "Define manually or use the built in queryhunter.default_base_dir function",
             )
         return filename.startswith(base_dir)
 

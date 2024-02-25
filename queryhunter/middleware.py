@@ -1,9 +1,11 @@
 from .context_manager import queryhunter
 
 
-def QueryHunterMiddleware(get_response):
-    def middleware(request):
-        with queryhunter(meta_data=dict(url=request.path, method=request.method)):
-            return get_response(request)
+class QueryHunterMiddleware:
+    def __init__(self, get_response):
+        self.get_response = get_response
 
-    return middleware
+    def __call__(self, request):
+        with queryhunter(meta_data=dict(url=request.path, method=request.method)):
+            response = self.get_response(request)
+        return response

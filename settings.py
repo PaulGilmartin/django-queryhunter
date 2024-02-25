@@ -32,7 +32,7 @@ SECRET_KEY = '1234'
 MIDDLEWARE = ['queryhunter.middleware.QueryHunterMiddleware',]
 
 QUERYHUNTER_BASE_DIR = queryhunter.default_base_dir(__file__)
-# QUERYHUNTER_REPORTING_OPTIONS = LoggingOptions(logger_name='queryhunter', sort_by='-count')
+# QUERYHUNTER_REPORTING_OPTIONS = LoggingOptions(logger_name='queryhunter', sort_by='-count', count_threshold=5)
 #
 # LOGGING = {
 #     'version': 1,

@@ -36,9 +36,9 @@ Line no: 14 | Code: authors.append(post.author.name) | Num. Queries: 5 | SQL: SE
 
 We have used this on a production level code base and has outperformed similar libraries in diagnosing certain kinds 
 of performance issues. We however have **not** yet enabled it in a production environment, so proceed with caution here.
-Note also that the aim of queryhunter is to identify the lines of your application code *only* which result in SQL queries.
-It does not profile third party libraries (including Django itself).
-Another thing to note is that this library is no where near as fancy, feature complete or as well tested as, e.g. django-silk.
+Note also that the aim of queryhunter is to identify the lines of your application code which result in SQL queries.
+It can however be configured to profile third party code with the appropriate choice of `QUERYHUNTER_BASE_DIR`, as explained
+in the [Installation](#installation) section below.
 
 
 ## Installation
@@ -47,8 +47,11 @@ pip install django-queryhunter
 ```
 
 You must then declare the `QUERYHUNTER_BASE_DIR` setting in your settings.py file. This is 
-the way that queryhunter knows where to look for your application code. You can use the built-in callable
-`queryhunter.default_base_dir` to set it to be the project root or make it a string of your choosing.
+the way that queryhunter knows where to look for your application code (or rather, the point in the stack
+at which to report as being responsible for executing a query).
+
+You can use the built-in callable `queryhunter.default_base_dir` to set it to be the project root or 
+make it a string of your choosing.
 
 ```python
 import queryhunter
@@ -191,7 +194,10 @@ Use the `PrintingOptions` class if you want to print the profiling results to th
    queries executed on a line of code before it is highlighted red in the output. The default is 5.
 - `duration_highlighting_threshold`: A float valued property which determines the threshold for the no. of seconds
    a line of code can spend executing before it is highlighted red in the output. The default is 0.1.
-
+- `count_threshold`: An integer valued property which determines the threshold for the number of 
+   queries executed on a line of code before it is printed. The default is 1.
+- `duration_threshold`: A float valued property which determines the threshold for the no. of seconds
+   a line of code can spend executing before it is printed. The default is 0.0.
 
 
 ### LoggingOptions
@@ -208,6 +214,10 @@ Use the `LoggingOptions` class if you want to log the profiling results to a fil
    The default is `None`, which means all modules touched within the context are profiled.
 - `max_sql_length`: An optional integer valued property which determines the maximum length of the SQL query printed.
    The default is None, meaning the entire SQL query is printed.
+- `count_threshold`: An integer valued property which determines the threshold for the number of 
+   queries executed on a line of code before it is logged. The default is 1.
+- `duration_threshold`: A float valued property which determines the threshold for the no. of seconds
+   a line of code can spend executing before it is logged. The default is 0.0.
 
 
 Logging is compatible with the standard Python logging library and its [Django extension](https://docs.djangoproject.com/en/5.0/topics/logging/).
