@@ -32,14 +32,16 @@ Line no: 13 | Code: for post in posts: | Num. Queries: 1 | SQL: SELECT "tests_po
 Line no: 14 | Code: authors.append(post.author.name) | Num. Queries: 5 | SQL: SELECT "tests_author"."id", "tests_author"."name" FROM "tests_author" WHERE "tests_author"."id" = %s LIMIT 21 | Duration: 8.804199999801199e-05
 ```
 
-## Limitations
+## Usage in Production
 
-We have used this on a production level code base and has outperformed similar libraries in diagnosing certain kinds 
-of performance issues. We however have **not** yet enabled it in a production environment, so proceed with caution here.
-Note also that the aim of queryhunter is to identify the lines of your application code which result in SQL queries.
-It can however be configured to profile third party code with the appropriate choice of `QUERYHUNTER_BASE_DIR`, as explained
-in the [Installation](#installation) section below.
+*queryhunter* is lightweight enough to have enabled in production and 
+its profiling will have negligible effect on performance. Having it 
+continually enabled in production means we can use it as a monitoring tool, 
+quickly alerting the developer to any new bottlenecks accidentally introduced.
 
+We have used this on a production code base and environment and it
+has outperformed similar libraries in diagnosing certain kinds of performance issues.
+We have found that it is adept in identifying missing `select_related` and `prefetch_related` calls in production code. 
 
 ## Installation
 ```bash
@@ -276,3 +278,9 @@ with queryhunter(meta_data=dict(url=request.path, method=request.method)):
 
 Adding custom meta data can be particularly useful when you want to associate an 
 identifier with the profiling data.
+
+
+## Profiling Third Party Code
+Note that the primary aim of queryhunter is to identify the lines of your application code which result in SQL queries.
+It can however be configured to profile third party code with the appropriate choice of `QUERYHUNTER_BASE_DIR`, as explained
+in the [Installation](#installation) section below.
