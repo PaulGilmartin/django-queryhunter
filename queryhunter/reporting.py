@@ -6,7 +6,6 @@ from typing import Optional
 
 from queryhunter.queryhunter import QueryHunter
 
-
 SORT_BY_OPTIONS = ['line_no', '-line_no', 'count', '-count', 'duration', '-duration']
 
 
@@ -34,6 +33,16 @@ class LoggingOptions(ReportingOptions):
     logger_name: str = 'queryhunter'
 
 
+@dataclass
+class RaisingOptions(ReportingOptions):
+    count_highlighting_threshold: int = 5
+    duration_highlighting_threshold: float = 0.5
+
+
+class QueryHunterException(Exception):
+    pass
+
+
 class QueryHunterReporter:
     def __init__(self, query_hunter: QueryHunter):
         self.query_hunter = query_hunter
@@ -41,12 +50,16 @@ class QueryHunterReporter:
         self.options = query_hunter.reporting_options
 
     @classmethod
-    def create(cls, queryhunter: QueryHunter) -> PrintingQueryHunterReporter | LoggingQueryHunterReporter:
+    def create(
+        cls, queryhunter: QueryHunter
+    ) -> PrintingQueryHunterReporter | LoggingQueryHunterReporter | RaisingQueryHunterReporter:
         reporting_options = queryhunter.reporting_options
         if isinstance(reporting_options, PrintingOptions):
             return PrintingQueryHunterReporter(queryhunter)
         elif isinstance(reporting_options, LoggingOptions):
             return LoggingQueryHunterReporter(queryhunter)
+        elif isinstance(reporting_options, RaisingOptions):
+            return RaisingQueryHunterReporter(queryhunter)
 
 
 class PrintingQueryHunterReporter(QueryHunterReporter):
@@ -79,3 +92,14 @@ class LoggingQueryHunterReporter(QueryHunterReporter):
                     continue
                 logger.info(f'Module: {module.name} | {line}')
 
+
+class RaisingQueryHunterReporter(QueryHunterReporter):
+    def report(self):
+        for name, module in self.query_info.items():
+            for line in module.lines:
+                if line.duration < self.options.duration_threshold or line.count < self.options.count_threshold:
+                    continue
+                if line.duration >= self.options.duration_highlighting_threshold:
+                    raise QueryHunterException(f'Excessive time spent in module: {name} | {line}')
+                elif line.count >= self.options.count_highlighting_threshold:
+                    raise QueryHunterException(f'Excessive repeated queries in module: {name} | {line}')

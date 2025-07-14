@@ -31,5 +31,9 @@ class queryhunter(contextlib.ContextDecorator):
         return self
 
     def __exit__(self, *exc):
-        self.reporter.report()
-        self._pre_execute_hook.__exit__(*exc)
+        try:
+            self.reporter.report()
+        finally:
+            # Ensure that we always call the exit hook, even if the `reporter.report` call raises an
+            # exception.
+            self._pre_execute_hook.__exit__(*exc)
