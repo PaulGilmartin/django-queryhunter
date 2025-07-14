@@ -225,6 +225,30 @@ Use the `LoggingOptions` class if you want to log the profiling results to a fil
 Logging is compatible with the standard Python logging library and its [Django extension](https://docs.djangoproject.com/en/5.0/topics/logging/).
 For example, to have **queryhunter** log to a file called `queryhunter.log`, we can add the following to our `settings.py` file:
 
+
+### RaisingOptions
+
+Use the `RaisingOptions` class if you want *queryhunter* to raise an exception when a bad query is found. `RaisingOptions` class can be configured via the attributes below:
+
+- `sort_by`: A string valued property which determines the order in which each line of code is printed
+   for each module profiled. Options are `line_no, -line_no, count, -count, duration, -duration`.
+   The default is `line_no`.
+- `modules`: An optional list of strings which can be used to filter the modules which are profiled. 
+   The default is `None`, which means all modules touched within the context are profiled.
+- `max_sql_length`: An optional integer valued property which determines the maximum length of the SQL query printed.
+   The default is None, meaning the entire SQL query is printed.
+- `count_highlighting_threshold`: An integer valued property which determines the threshold for the number of 
+   queries executed on a line of code before it is highlighted red in the output. The default is 5.
+- `duration_highlighting_threshold`: A float valued property which determines the threshold for the no. of seconds
+   a line of code can spend executing before it is highlighted red in the output. The default is 0.1.
+- `count_threshold`: An integer valued property which determines the threshold for the number of 
+   queries executed on a line of code before it is printed. The default is 1.
+- `duration_threshold`: A float valued property which determines the threshold for the no. of seconds
+   a line of code can spend executing before it is printed. The default is 0.0.
+
+> [!INFO]
+> Setting `RaisingOptions` can be quite useful for testing, since it causes tests with slow/repeating queries to fail. *You should not use `RaisingOptions` in production.*
+
 ```python
 QUERYHUNTER_REPORTING_OPTIONS = LoggingOptions(logger_name='queryhunter', sort_by='-count')
 
