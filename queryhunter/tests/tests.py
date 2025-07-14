@@ -3,7 +3,7 @@ import pytest
 from django.urls import reverse
 
 from queryhunter import queryhunter
-from queryhunter.reporting import PrintingOptions, LoggingOptions
+from queryhunter.reporting import PrintingOptions, LoggingOptions, QueryHunterException, RaisingOptions
 from queryhunter.tests.my_module import get_authors, create_posts
 
 
@@ -104,3 +104,13 @@ def test_logging():
     assert first_line.line_no == 13
     assert first_line.count == 1
     assert first_line.duration > 0
+
+@pytest.mark.django_db(transaction=True)
+def test_raising():
+    create_posts()
+    with queryhunter(reporting_options=RaisingOptions()):
+        try:
+            get_authors()
+            assert False, "queryhunter should have raised an exception"
+        except Exception as e:
+            assert isinstance(e, QueryHunterException)
