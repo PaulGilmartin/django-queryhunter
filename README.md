@@ -246,7 +246,7 @@ Use the `RaisingOptions` class if you want *queryhunter* to raise an exception w
 - `duration_threshold`: A float valued property which determines the threshold for the no. of seconds
    a line of code can spend executing before it is printed. The default is 0.0.
 
-> [!INFO]
+> [!WARNING]
 > Setting `RaisingOptions` can be quite useful for testing, since it causes tests with slow/repeating queries to fail. *You should not use `RaisingOptions` in production.*
 
 ```python
