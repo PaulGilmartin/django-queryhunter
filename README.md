@@ -221,6 +221,7 @@ Use the `LoggingOptions` class if you want to log the profiling results to a fil
 - `duration_threshold`: A float valued property which determines the threshold for the no. of seconds
    a line of code can spend executing before it is logged. The default is 0.0.
 
+
 Logging is compatible with the standard Python logging library and its [Django extension](https://docs.djangoproject.com/en/5.0/topics/logging/).
 For example, to have **queryhunter** log to a file called `queryhunter.log`, we can add the following to our `settings.py` file:
 
