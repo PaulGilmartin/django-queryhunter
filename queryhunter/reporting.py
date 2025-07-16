@@ -35,8 +35,8 @@ class LoggingOptions(ReportingOptions):
 
 @dataclass
 class RaisingOptions(ReportingOptions):
-    count_highlighting_threshold: int = 5
-    duration_highlighting_threshold: float = 0.5
+    count_threshold: int = 5
+    duration_threshold: float = 0.5
 
 
 class QueryHunterException(Exception):
@@ -99,7 +99,7 @@ class RaisingQueryHunterReporter(QueryHunterReporter):
             for line in module.lines:
                 if line.duration < self.options.duration_threshold or line.count < self.options.count_threshold:
                     continue
-                if line.duration >= self.options.duration_highlighting_threshold:
+                if line.duration >= self.options.duration_threshold:
                     raise QueryHunterException(f'Excessive time spent in module: {name} | {line}')
-                elif line.count >= self.options.count_highlighting_threshold:
+                elif line.count >= self.options.count_threshold:
                     raise QueryHunterException(f'Excessive repeated queries in module: {name} | {line}')

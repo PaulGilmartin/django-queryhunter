@@ -274,14 +274,10 @@ Use the `RaisingOptions` class if you want *queryhunter* to raise an exception w
    The default is `None`, which means all modules touched within the context are profiled.
 - `max_sql_length`: An optional integer valued property which determines the maximum length of the SQL query printed.
    The default is None, meaning the entire SQL query is printed.
-- `count_highlighting_threshold`: An integer valued property which determines the threshold for the number of 
-   queries executed on a line of code before it is highlighted red in the output. The default is 5.
-- `duration_highlighting_threshold`: A float valued property which determines the threshold for the no. of seconds
-   a line of code can spend executing before it is highlighted red in the output. The default is 0.1.
 - `count_threshold`: An integer valued property which determines the threshold for the number of 
-   queries executed on a line of code before it is printed. The default is 1.
+   queries executed on a line of code before an exception is raised. The default is 1.
 - `duration_threshold`: A float valued property which determines the threshold for the no. of seconds
-   a line of code can spend executing before it is printed. The default is 0.0.
+   a line of code can spend executing before an exception is raised. The default is 0.5.
 
 > [!WARNING]
 > Setting `RaisingOptions` can be quite useful for testing, since it causes tests with slow/repeating queries to fail. *You should not use `RaisingOptions` in production.*
